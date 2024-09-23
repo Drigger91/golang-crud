@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/Drigger91/golang-crud/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -15,6 +16,10 @@ var db *gorm.DB
 // ConnectToDatabase initializes the connection to the target database
 func ConnectToDatabase() {
 	// Get the database connection details from environment variables
+	if db != nil {
+		fmt.Println("Database already connected!")
+		return
+	}
 	host := os.Getenv("DB_HOST")
 	user := os.Getenv("DB_USER")
 	password := os.Getenv("DB_PASSWORD")
@@ -42,4 +47,10 @@ func GetDatabase() *gorm.DB {
 		log.Fatal("Database is not connected")
 	}
 	return db
+}
+func AutoMigrate() {
+	err := db.AutoMigrate(&models.User{}, &models.Transaction{})
+	if err != nil {
+		log.Fatalf("Database migration failed: %v", err)
+	}
 }
